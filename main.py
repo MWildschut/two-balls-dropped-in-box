@@ -2,13 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-def DropTwoBalls(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1 = 0.5, r2 = 0.5, LeftWall = 0, RightWall = 10, Floor = 0, Ceiling = 10):
+def DropTwoBalls(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1 = 0.5, r2 = 0.5, LeftWall = 0, RightWall = 10, Floor = 0, Ceiling = 10, m1 = 1, m2 = 1):
     g = 9.81        #gravitational acceleration
-<<<<<<< Updated upstream
-    Dt = 0.01       #time step
-=======
     Dt = 0.001       #time step
->>>>>>> Stashed changes
     t = 0           #starttime of the simulation
     tmax = 10       #total run time of the simulation
 
@@ -38,31 +34,12 @@ def DropTwoBalls(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1 = 0.5, r2 = 0.5, LeftWall = 0, R
         y1,vy1 = CheckCollisions(y1,vy1,r1,Floor,Ceiling)       #checks if ball 1 hits a floor or ceiling
         y2,vy2 = CheckCollisions(y2,vy2,r2,Floor,Ceiling)       #checks if ball 2 hits a floor or ceiling
 
-<<<<<<< Updated upstream
-        if distance <= r1+r2: #if the balls hit eachother the function BallCollision is applied
-            vx1, vy1, vx2, vy2 = BallCollision(x1,x2,y1,y2,vx1,vy1,vx2,vy2)
-
-        if distance < (r1+r2)/2: #separates the balls incase they get stuck 
-            if x1 < x2 and x2 < (RightWall-LeftWall)/2:
-                x2 = x1 + r1 + r2   #move ball 2 to the right
-            elif x1 < x2 and x2 > (RightWall-LeftWall)/2:
-                x1 = x1 - r1 - r2   #move ball 1 to the left
-            elif x1 > x2 and x1 < (RightWall-LeftWall)/2:
-                x1 = x2 + r1 + r2   #move ball 1 to the right
-            else:
-                x2 = x1 - r1 - r2   #move ball 2 to the left
-
-
-
-
-
-=======
         distance = np.sqrt((x1-x2)**2 + (y1 - y2)**2) - r1 - r2 #distance between the 2 balls
         if distance <= 0: #if the balls hit eachother the function BallCollision is applied
             x1, y1, x2, y2 = Separate(x1,y1,x2,y2,r1,r2,LeftWall,RightWall,Floor,Ceiling,distance)
             vx1, vx2 = BallCollision(vx1,vx2,m1,m2)
             vy1, vy2 = BallCollision(vy1,vy2,m1,m2)
->>>>>>> Stashed changes
+
 
         #the coordinates of the balls after the calculations are put into the arrays   
         x1pos.append(x1)
@@ -82,41 +59,36 @@ def CheckCollisions(x, v, r, wall1, wall2):
     return x, v         #the new values of the coordinate and the velocity in that direction are returned
 
     
-<<<<<<< Updated upstream
-def BallCollision(x1,x2,y1,y2,vx1,vy1,vx2,vy2):
-    if x1 == x2 and y1 < y2:
-        Phi = 90    #if x1 equals x2 the calculation for phi doesn't work since it devides by 0. In this case phi should be 90 degrees
-    elif x1 == x2 and y1 >= y2:
-        Phi = -90    #if x1 equals x2 the calculation for phi doesn't work since it devides by 0. In this case phi should be 90 degrees
-    else:
-        Phi = np.arctan((y2-y1)/(x2-x1))    #angle between middle point of the 2 balls when they collide
-    v1 = np.sqrt(vx1**2 + vy1**2)           #total velocity of ball 1
-    v2 = np.sqrt(vx2**2 + vy2**2)           #total velocity of ball 2
-    if vx1 == 0 and vy1 < 0:
-        Theta1 = -90    #if vx1 equals0 the calculation for theta doesn't work since it devides by 0. In this case phi should be 90 degrees
-    elif vx1 == 0 and vy1 >= 0:
-        Theta1 = 90    #if x1 equals x2 the calculation for phi doesn't work since it devides by 0. In this case phi should be 90 degrees
-    else:
-        Theta1 = np.arctan(vy1/vx1)             #movement angle of ball 1
-
-    if vx2 == 0 and vy2 < 0:
-        Theta2 = -90    #if x1 equals x2 the calculation for phi doesn't work since it devides by 0. In this case phi should be 90 degrees
-    elif vx2 == 0 and vy2 >= 0:
-        Theta2 = 90    #if x1 equals x2 the calculation for phi doesn't work since it devides by 0. In this case phi should be 90 degrees
-    else:
-        Theta2 = np.arctan(vy2/vx2)             #movement angle of ball 2
-    #formulas to calculate the new velocities after collision
-    vx1 = v2 * np.cos(Theta2 - Phi)*np.cos(Phi) + v1 * np.sin(Theta1 - Phi) * np.cos(Phi + np.pi/2)
-    vy1 = v2 * np.cos(Theta2 - Phi)*np.sin(Phi) + v1 * np.sin(Theta1 - Phi) * np.sin(Phi + np.pi/2)
-    vx2 = v1 * np.cos(Theta2 - Phi)*np.cos(Phi) + v2 * np.sin(Theta1 - Phi) * np.cos(Phi + np.pi/2)
-    vy1 = v1 * np.cos(Theta2 - Phi)*np.sin(Phi) + v2 * np.sin(Theta1 - Phi) * np.sin(Phi + np.pi/2)
-    return vx1, vy1, vx2, vy2 #returns the new velocities
-=======
 def BallCollision(v1,v2,m1,m2):
     v2n = (2*m1*v1 + m2*v2-m1*v2)/(m1+m2)
     v1n = (m1*v1+m2*v2-m2*v2n)/m1
     return v1n, v2n #returns the new velocities
->>>>>>> Stashed changes
+
+def Separate(x1,y1,x2,y2,r1,r2,LeftWall,RightWall,Floor,Ceiling, distance):
+    if x1 == x2 and y1 < y2:
+        Phi = np.pi/2    #if x1 equals x2 the calculation for phi doesn't work since it devides by 0. In this case phi should be 90 degrees
+    elif x1 == x2 and y1 >= y2:
+        Phi = -np.pi/2    #if x1 equals x2 the calculation for phi doesn't work since it devides by 0. In this case phi should be 90 degrees
+    else:
+        Phi = np.arctan((y2-y1)/(x2-x1))    #angle between middle point of the 2 balls when they collide
+    x1 += np.cos(Phi)*0.5*distance
+    y1 += np.sin(Phi)*0.5*distance
+    x2 -= np.cos(Phi)*0.5*distance
+    y2 -= np.sin(Phi)*0.5*distance 
+
+    if x1 + r1 > RightWall or x1 - r1 < LeftWall:
+        x2 -= np.cos(Phi)*distance #x2 is moved
+        x1 -= np.cos(Phi)*0.5*distance #x1 is moved back to where it didn't collide with the wall
+    if x2 + r2 > RightWall or x2 - r2 < LeftWall:
+        x1 += np.cos(Phi)*distance
+        x2 += np.cos(Phi)*0.5*distance
+    if y1 + r1 > Ceiling or y1 - r1 < Floor:
+        y2 -= np.cos(Phi)*distance
+        y1 -= np.sin(Phi)*0.5*distance
+    if y2 + r2 > Ceiling or y2 - r2 < Floor:
+        y1 += np.cos(Phi)*distance
+        y2 += np.sin(Phi)*0.5*distance
+    return x1, y1, x2, y2
 
 def Animate(x1pos,y1pos,x2pos,y2pos,Dt,r1,r2,LeftWall, RightWall, Floor, Ceiling):
     fig, ax = plt.subplots()
@@ -134,8 +106,7 @@ def Animate(x1pos,y1pos,x2pos,y2pos,Dt,r1,r2,LeftWall, RightWall, Floor, Ceiling
     ani = animation.FuncAnimation(fig, update, interval=Dt*1000,frames=len(x1pos), repeat = False) #animates the ball using the update function
     plt.show()
 
-<<<<<<< Updated upstream
+
 DropTwoBalls(x1=2,y1=9,vx1=0.5,vy1=0,x2=8,y2=8,vx2=-0.5,vy2 =0) 
-=======
-DropTwoBalls(x1=2,y1=8,vx1=0.5,vy1=0,x2=8,y2=8,vx2=0.03,vy2 =0) 
->>>>>>> Stashed changes
+
+
