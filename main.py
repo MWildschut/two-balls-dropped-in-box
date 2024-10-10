@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 def DropTwoBalls(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1 = 0.5, r2 = 0.5, LeftWall = 0, RightWall = 10, Floor = 0, Ceiling = 10, m1 = 1, m2 = 1):
-    g = 9.81        #gravitational acceleration
-    Dt = 0.001       #time step
+    g = -9.81        #gravitational acceleration
+    Dt = 0.01       #time step
     t = 0           #starttime of the simulation
-    tmax = 10       #total run time of the simulation
+    tmax = 30       #total run time of the simulation
 
     #Empty arrays for the x and y coordinates of both balls 
     x1pos =[]
@@ -20,13 +20,13 @@ def DropTwoBalls(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1 = 0.5, r2 = 0.5, LeftWall = 0, R
         return
 
     while t <= tmax:         #repeats untill t = tmax
-        t = t+Dt            #time step
-        vy1 = vy1 - g*Dt    #gravity applied
-        vy2 = vy2 - g*Dt
-        x1 = x1 + vx1       #movement of the balls
-        x2 = x2 + vx2
-        y1 = y1 + vy1
-        y2 = y2 + vy2
+        t += Dt            #time step
+        vy1 += g*Dt    #gravity applied
+        vy2 += g*Dt
+        x1 += vx1*Dt       #movement of the balls
+        x2 += vx2*Dt
+        y1 += vy1*Dt
+        y2 += vy2*Dt
         distance = np.sqrt((x1-x2)**2 + (y1 - y2)**2) #distance between the 2 balls
     
         x1,vx1 = CheckCollisions(x1,vx1,r1,LeftWall,RightWall)  #checks if ball 1 hits a wall
@@ -94,19 +94,24 @@ def Animate(x1pos,y1pos,x2pos,y2pos,Dt,r1,r2,LeftWall, RightWall, Floor, Ceiling
     fig, ax = plt.subplots()
     ax.axis([LeftWall,RightWall,Floor,Ceiling]) #sets axes to the walls, floor and ceiling of the box
     ax.set_aspect("equal")      #sets the axes to the same scale
+    plt.xlabel("x(m)")
+    plt.ylabel("y(m)")
     point1, = ax.plot(0,1, marker="o", markersize = 50*r1, label = "ball 1")    #marker for ball 1 is made
     point2, = ax.plot(0,1, marker="o", markersize = 50*r2, label = "ball 2")    #marker for ball 2 is made
     plt.legend(loc = "upper right", markerscale = 0.5)  #the legend is made
 
+    interval = 100
+    delay = interval/(Dt*1000)
     def update(frame): #function to update the dot every timeframe, this funcion is called in the animate function
-        point1.set_data([x1pos[frame]],[y1pos[frame]])  #set the location of ball 1 to a certain timeframe
-        point2.set_data([x2pos[frame]],[y2pos[frame]])  #set the location of ball 2 to a certain timeframe
+        n = int(frame * delay)
+        point1.set_data([x1pos[n]],[y1pos[n]])  #set the location of ball 1 to a certain timeframe
+        point2.set_data([x2pos[n]],[y2pos[n]])  #set the location of ball 2 to a certain timeframe
         return point1, point2,  #returns the new locations of the balls
          
-    ani = animation.FuncAnimation(fig, update, interval=Dt*1000,frames=len(x1pos), repeat = False) #animates the ball using the update function
+    ani = animation.FuncAnimation(fig, update, interval = interval, frames=int(len(x1pos)/delay), repeat = False) #animates the ball using the update function
     plt.show()
 
 
-DropTwoBalls(x1=2,y1=9,vx1=0.5,vy1=0,x2=8,y2=8,vx2=-0.5,vy2 =0) 
+DropTwoBalls(x1=2,y1=9,vx1=1,vy1=0,x2=8,y2=8,vx2=-2,vy2 =0) 
 
 
