@@ -80,28 +80,35 @@ def Animate(x1pos,y1pos,x2pos,y2pos,Dt,r1,r2,LeftWall, RightWall, Floor, Ceiling
     plt.show()
 
 
-def DropTwoBalls(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1 = 0.5, r2 = 0.5, LeftWall = 0, RightWall = 10, Floor = 0, Ceiling = 10, m1 = 1, m2 = 1):
+def DropTwoBalls(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1 = 0.5, r2 = 0.5, LeftWall = 0, RightWall = 10, Floor = 0, Ceiling = 10, m1 = 1, m2 = 1, animate = True):
     #set standard initial values
     g = -9.81           
     Dt = 0.01           
     t = 0              
-    tmax = 10           
+    tmax = 20          
 
     #Empty arrays for the x and y coordinates of both balls 
     x1pos =[]
     y1pos =[]
     x2pos =[]
     y2pos =[]
-    
+
+    datatypes = [type(x1),type(y1),type(vx1),type(vy1),type(x2),type(y2),type(vx2),type(vy2), type(r1), type(r2), type(LeftWall),type(RightWall),type(Floor),type(Ceiling),type(m1),type(m2)]
+    for i in range(len(datatypes)):
+        if datatypes[i] != int and datatypes[i] != float:
+            print("Error: Input values should be integers or floats.")
+            return None
     if RightWall < LeftWall or Ceiling < Floor:
         #Checks if the boundaries have appropriate values
         print("Error: RightWall has to be smaller than LeftWall and Floor has to be smaller than Ceiling")
-        return
+        return None
     if x1 - r1 < LeftWall or x2 - r2 < LeftWall or x1 + r1 > RightWall or x2 + r2 > RightWall or y1 - r1 < Floor or y2 - r2 < Floor or y1 + r1 > Ceiling or y2 + r2 > Ceiling:
         #Checks if both of the balls are within the box
         print("Error: one of the balls is outside of the box")
-        return
-
+        return None
+    if r1 <= 0 or r2 <= 0 or m1 <= 0 or m2 <=0:
+        print("Error: the radius and mass of a ball cannot be 0 or smaller than 0")
+        return None
 
     while t <= tmax:            #repeats untill t = tmax
         t += Dt                 #time step
@@ -131,4 +138,9 @@ def DropTwoBalls(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1 = 0.5, r2 = 0.5, LeftWall = 0, R
         x2pos.append(x2)
         y2pos.append(y2)
 
-    Animate(x1pos,y1pos,x2pos,y2pos,Dt,r1,r2,LeftWall,RightWall,Floor,Ceiling) #The function to animate the balls is called
+    if animate == False:
+        return "Done"
+    else:
+        Animate(x1pos,y1pos,x2pos,y2pos,Dt,r1,r2,LeftWall,RightWall,Floor,Ceiling) #The function to animate the balls is called
+    return
+
