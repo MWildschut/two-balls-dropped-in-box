@@ -2,13 +2,44 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
+def CheckInputs(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1,r2,m1,m2,LeftWall,RightWall,Floor,Ceiling):
+    datatypes = [type(x1),type(y1),type(vx1),type(vy1),type(x2),type(y2),type(vx2),type(vy2), type(r1), type(r2), type(LeftWall),type(RightWall),type(Floor),type(Ceiling),type(m1),type(m2)]
+    
+    for i in range(len(datatypes)):
+        if datatypes[i] != int and datatypes[i] != float:
+            print("Error: Input values should be integers or floats.")
+            return "Error"
+    if RightWall < LeftWall or Ceiling < Floor:
+        #Checks if the boundaries have appropriate values
+        print("Error: RightWall has to be smaller than LeftWall and Floor has to be smaller than Ceiling")
+        return "Error"
+    if x1 - r1 < LeftWall or x2 - r2 < LeftWall or x1 + r1 > RightWall or x2 + r2 > RightWall or y1 - r1 < Floor or y2 - r2 < Floor or y1 + r1 > Ceiling or y2 + r2 > Ceiling:
+        #Checks if both of the balls are within the box
+        print("Error: one of the balls is outside of the box")
+        return "Error"
+    if r1 <= 0 or r2 <= 0 or m1 <= 0 or m2 <=0:
+        print("Error: the radius and mass of a ball cannot be 0 or smaller than 0")
+        return "Error"
+    if np.sqrt((x1-x2)**2 + (y1 - y2)**2) - r1 - r2 < 0:
+        print("Error: the balls cannot overlap")
+        return "Error"
+
+def Movement(x,y,vx,vy,Dt,g):
+    #Movement for each ball
+    vy += g*Dt             
+    x += vx*Dt       
+    y += vy*Dt
+    return x, y, vy
+    
+        
+            
 def CheckCollisions(x, v, r, wall1, wall2):
     #if the ball touches a boundary it turns the ball around and places it within the box so it doesn't phase through the wall
-    if x - r <= wall1:  
-        v = -v          
+    if x - r <= wall1: 
+        v = abs(v) 
         x = wall1 + r   
     if x + r >= wall2:
-        v = -v
+        v = -1* abs(v)   #velocity turns negative
         x = wall2 - r
     return x, v         #the new values of the coordinate and the velocity in that direction are returned
 
@@ -64,8 +95,8 @@ def Animate(x1pos,y1pos,x2pos,y2pos,Dt,r1,r2,LeftWall, RightWall, Floor, Ceiling
     M = ax.transData.get_matrix()
     xscale = M[0,0]
     #Creates the point on the plot for the balls
-    point1, = ax.plot(0,1, marker="o", markersize = r1*xscale, label = "ball 1")   
-    point2, = ax.plot(0,1, marker="o", markersize = r2*xscale, label = "ball 2")    
+    point1, = ax.plot(x1pos[0],y1pos[0], marker="o", markersize = r1*xscale, label = "ball 1")   
+    point2, = ax.plot(x2pos[0],y2pos[0], marker="o", markersize = r2*xscale, label = "ball 2")    
     plt.legend(loc = "upper right", markerscale = 0.01*xscale)  #the legend is made
 
     interval = 60 #time interval between 2 frames, if every frame gets plotted the framerate is too high for my computer to generate in real time
@@ -80,9 +111,12 @@ def Animate(x1pos,y1pos,x2pos,y2pos,Dt,r1,r2,LeftWall, RightWall, Floor, Ceiling
     plt.show()
 
 
-def DropTwoBalls(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1 = 0.5, r2 = 0.5, LeftWall = 0, RightWall = 10, Floor = 0, Ceiling = 10, m1 = 1, m2 = 1, animate = True):
+def DropTwoBalls(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1 = 0.5, r2 = 0.5, LeftWall = 0, RightWall = 10, Floor = 0, Ceiling = 10, m1 = 1, m2 = 1):
+    if CheckInputs(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1,r2,m1,m2,LeftWall,RightWall,Floor,Ceiling) == "Error": #checks if inputs are valid. In a function for readability
+        return None
+    
     #set standard initial values
-    g = -9.81           
+    g = -9.81       
     Dt = 0.01           
     t = 0              
     tmax = 20          
@@ -93,33 +127,12 @@ def DropTwoBalls(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1 = 0.5, r2 = 0.5, LeftWall = 0, R
     x2pos =[]
     y2pos =[]
 
-    datatypes = [type(x1),type(y1),type(vx1),type(vy1),type(x2),type(y2),type(vx2),type(vy2), type(r1), type(r2), type(LeftWall),type(RightWall),type(Floor),type(Ceiling),type(m1),type(m2)]
-    for i in range(len(datatypes)):
-        if datatypes[i] != int and datatypes[i] != float:
-            print("Error: Input values should be integers or floats.")
-            return None
-    if RightWall < LeftWall or Ceiling < Floor:
-        #Checks if the boundaries have appropriate values
-        print("Error: RightWall has to be smaller than LeftWall and Floor has to be smaller than Ceiling")
-        return None
-    if x1 - r1 < LeftWall or x2 - r2 < LeftWall or x1 + r1 > RightWall or x2 + r2 > RightWall or y1 - r1 < Floor or y2 - r2 < Floor or y1 + r1 > Ceiling or y2 + r2 > Ceiling:
-        #Checks if both of the balls are within the box
-        print("Error: one of the balls is outside of the box")
-        return None
-    if r1 <= 0 or r2 <= 0 or m1 <= 0 or m2 <=0:
-        print("Error: the radius and mass of a ball cannot be 0 or smaller than 0")
-        return None
-
     while t <= tmax:            #repeats untill t = tmax
         t += Dt                 #time step
         #movement and acceleration of the balls
-        vy1 += g*Dt             
-        vy2 += g*Dt
-        x1 += vx1*Dt       
-        x2 += vx2*Dt
-        y1 += vy1*Dt
-        y2 += vy2*Dt
-            
+        x1,y1,vy1 = Movement(x1,y1,vx1,vy1,Dt,g)
+        x2,y2,vy2 = Movement(x2,y2,vx2,vy2,Dt,g)
+
         x1,vx1 = CheckCollisions(x1,vx1,r1,LeftWall,RightWall)  #checks if ball 1 hits a wall
         x2,vx2 = CheckCollisions(x2,vx2,r2,LeftWall,RightWall)  #checks if ball 2 hits a wall
         y1,vy1 = CheckCollisions(y1,vy1,r1,Floor,Ceiling)       #checks if ball 1 hits a floor or ceiling
@@ -138,9 +151,7 @@ def DropTwoBalls(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1 = 0.5, r2 = 0.5, LeftWall = 0, R
         x2pos.append(x2)
         y2pos.append(y2)
 
-    if animate == False:
-        return "Done"
-    else:
-        Animate(x1pos,y1pos,x2pos,y2pos,Dt,r1,r2,LeftWall,RightWall,Floor,Ceiling) #The function to animate the balls is called
+        
+    Animate(x1pos,y1pos,x2pos,y2pos,Dt,r1,r2,LeftWall,RightWall,Floor,Ceiling) #The function to animate the balls is called
     return
 
