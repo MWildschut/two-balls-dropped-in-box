@@ -6,7 +6,7 @@ def CheckInputs(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1,r2,m1,m2,LeftWall,RightWall,Floor
     variables = [x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1,r2,m1,m2,LeftWall,RightWall,Floor,Ceiling,tmax]
     
     for i in range(len(variables)):
-        if type(variables=[i]) != int and type(variables[i]) != float:
+        if type(variables[i]) != int and type(variables[i]) != float:
             print("Error: Input values should be integers or floats.")
             return "Error"
     if RightWall < LeftWall or Ceiling < Floor:
@@ -25,6 +25,7 @@ def CheckInputs(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1,r2,m1,m2,LeftWall,RightWall,Floor
         return "Error"
     if tmax <= 0:
         print("Error: the total runtime cannot be zero or negative")
+        return "Error"
 
 def Movement(x,y,vx,vy,Dt,g):
     #Movement for each ball
@@ -87,11 +88,12 @@ def Separate(x1,y1,x2,y2,r1,r2,LeftWall,RightWall,Floor,Ceiling, distance):
 
 
 def Animate(x1pos,y1pos,x2pos,y2pos,Dt,r1,r2,LeftWall, RightWall, Floor, Ceiling):
-    #Create the plot
+    #check inputs
     if len(x1pos) != len(y1pos) or len(x2pos) != len(y2pos):
-        return 
+        return "Error"
     if len(x1pos) == 0 or len(y1pos) == 0 or len(x2pos) == 0 or len(y2pos) == 0:
-        return 
+        return "Error"
+    #Create the plot
     fig, ax = plt.subplots()
     ax.axis([LeftWall,RightWall,Floor,Ceiling]) 
     ax.set_aspect("equal")      
