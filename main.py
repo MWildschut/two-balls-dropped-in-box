@@ -2,11 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-def CheckInputs(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1,r2,m1,m2,LeftWall,RightWall,Floor,Ceiling):
-    datatypes = [type(x1),type(y1),type(vx1),type(vy1),type(x2),type(y2),type(vx2),type(vy2), type(r1), type(r2), type(LeftWall),type(RightWall),type(Floor),type(Ceiling),type(m1),type(m2)]
+def CheckInputs(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1,r2,m1,m2,LeftWall,RightWall,Floor,Ceiling,tmax):
+    variables = [x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1,r2,m1,m2,LeftWall,RightWall,Floor,Ceiling,tmax]
     
-    for i in range(len(datatypes)):
-        if datatypes[i] != int and datatypes[i] != float:
+    for i in range(len(variables)):
+        if type(variables=[i]) != int and type(variables[i]) != float:
             print("Error: Input values should be integers or floats.")
             return "Error"
     if RightWall < LeftWall or Ceiling < Floor:
@@ -23,6 +23,8 @@ def CheckInputs(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1,r2,m1,m2,LeftWall,RightWall,Floor
     if np.sqrt((x1-x2)**2 + (y1 - y2)**2) - r1 - r2 < 0:
         print("Error: the balls cannot overlap")
         return "Error"
+    if tmax <= 0:
+        print("Error: the total runtime cannot be zero or negative")
 
 def Movement(x,y,vx,vy,Dt,g):
     #Movement for each ball
@@ -31,9 +33,9 @@ def Movement(x,y,vx,vy,Dt,g):
     y += vy*Dt
     return x, y, vy
     
-        
+    
             
-def CheckCollisions(x, v, r, wall1, wall2):
+def CollisionWall(x, v, r, wall1, wall2):
     #if the ball touches a boundary it turns the ball around and places it within the box so it doesn't phase through the wall
     if x - r <= wall1: 
         v = abs(v) 
@@ -86,6 +88,10 @@ def Separate(x1,y1,x2,y2,r1,r2,LeftWall,RightWall,Floor,Ceiling, distance):
 
 def Animate(x1pos,y1pos,x2pos,y2pos,Dt,r1,r2,LeftWall, RightWall, Floor, Ceiling):
     #Create the plot
+    if len(x1pos) != len(y1pos) or len(x2pos) != len(y2pos):
+        return 
+    if len(x1pos) == 0 or len(y1pos) == 0 or len(x2pos) == 0 or len(y2pos) == 0:
+        return 
     fig, ax = plt.subplots()
     ax.axis([LeftWall,RightWall,Floor,Ceiling]) 
     ax.set_aspect("equal")      
@@ -109,17 +115,17 @@ def Animate(x1pos,y1pos,x2pos,y2pos,Dt,r1,r2,LeftWall, RightWall, Floor, Ceiling
          
     ani = animation.FuncAnimation(fig, update, interval = interval, frames=int(len(x1pos)/delay), repeat = False) #animates the ball using the update function
     plt.show()
+    
 
 
-def DropTwoBalls(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1 = 0.5, r2 = 0.5, LeftWall = 0, RightWall = 10, Floor = 0, Ceiling = 10, m1 = 1, m2 = 1):
-    if CheckInputs(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1,r2,m1,m2,LeftWall,RightWall,Floor,Ceiling) == "Error": #checks if inputs are valid. In a function for readability
+def DropTwoBalls(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1 = 0.5, r2 = 0.5, LeftWall = 0, RightWall = 10, Floor = 0, Ceiling = 10, m1 = 1, m2 = 1, tmax = 20):
+    if CheckInputs(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1,r2,m1,m2,LeftWall,RightWall,Floor,Ceiling,tmax) == "Error": #checks if inputs are valid. In a function for readability
         return None
     
-    #set standard initial values
-    g = -9.81       
-    Dt = 0.01           
+    #set initial values
+    g = -9.81             
     t = 0              
-    tmax = 20          
+    Dt = 0.01
 
     #Empty arrays for the x and y coordinates of both balls 
     x1pos =[]
@@ -133,10 +139,10 @@ def DropTwoBalls(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1 = 0.5, r2 = 0.5, LeftWall = 0, R
         x1,y1,vy1 = Movement(x1,y1,vx1,vy1,Dt,g)
         x2,y2,vy2 = Movement(x2,y2,vx2,vy2,Dt,g)
 
-        x1,vx1 = CheckCollisions(x1,vx1,r1,LeftWall,RightWall)  #checks if ball 1 hits a wall
-        x2,vx2 = CheckCollisions(x2,vx2,r2,LeftWall,RightWall)  #checks if ball 2 hits a wall
-        y1,vy1 = CheckCollisions(y1,vy1,r1,Floor,Ceiling)       #checks if ball 1 hits a floor or ceiling
-        y2,vy2 = CheckCollisions(y2,vy2,r2,Floor,Ceiling)       #checks if ball 2 hits a floor or ceiling
+        x1,vx1 = CollisionWall(x1,vx1,r1,LeftWall,RightWall)  #checks if ball 1 hits a wall
+        x2,vx2 = CollisionWall(x2,vx2,r2,LeftWall,RightWall)  #checks if ball 2 hits a wall
+        y1,vy1 = CollisionWall(y1,vy1,r1,Floor,Ceiling)       #checks if ball 1 hits a floor or ceiling
+        y2,vy2 = CollisionWall(y2,vy2,r2,Floor,Ceiling)       #checks if ball 2 hits a floor or ceiling
 
         distance = np.sqrt((x1-x2)**2 + (y1 - y2)**2) - r1 - r2 #distance between the 2 balls
         if distance <= 0: #if the balls hit eachother the function BallCollision is applied
