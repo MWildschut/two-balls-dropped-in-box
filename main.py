@@ -3,6 +3,11 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 def CheckInputs(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1,r2,m1,m2,BoxWidth,BoxHeight,tmax):
+    """
+    A function to check if the inputs of the DropTwoBalls function ar valid
+
+    Parameters --- see Help(main.DropTwoBalls)
+    """
     variables = [x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1,r2,m1,m2,BoxWidth,BoxHeight,tmax]
     
     for i in range(len(variables)):
@@ -27,30 +32,72 @@ def CheckInputs(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1,r2,m1,m2,BoxWidth,BoxHeight,tmax)
         print("Error: the total runtime cannot be zero or negative")
         return "Error"
 
-def Movement(x,y,vx,vy,Dt,g):
+def Movement(x,y,vx,vy,Dt):
+    """
+    A function to simulate the movement of a ball
+    
+    Parameters:
+        x(float): The x coordinate of the ball
+        y(float): The y coordinate of the ball
+        vx(float): The velocity of the ball in the x direction
+        vy(float): The velocity of the ball in the y direction
+        Dt(float): The timestep between two calculations
+    """
     #Movement for each ball
-    vy += g*Dt             
+    vy += 9.81*Dt             
     x += vx*Dt       
     y += vy*Dt
     return x, y, vy
     
-def CollisionWall(x, v, r, wall):
+def CollisionWall(x, v, r, size):
+    """
+    A function to calculate if the ball hits a wall in either the x or y direction and make it bounce accordingly
+
+    Parameters:
+        x(float): The coordinate of the ball on the chosen axis
+        v(float): The velocity of the ball on the chosen axis
+        r(float): The radius of the ball
+        size(float): The size of the box in direction of the chosen axis
+    """
     #if the ball touches a boundary it turns the ball around and places it within the box so it doesn't phase through the wall
     if x - r <= 0: 
         v = abs(v) 
         x = r   
-    if x + r >= wall:
+    if x + r >= size:
         v = -1* abs(v)   #velocity turns negative
-        x = wall - r
+        x = size - r
     return x, v         #the new values of the coordinate and the velocity in that direction are returned
  
 def BallCollision(v1,v2,m1,m2):
+    """
+    A function to calculate the new velocities of the balls in either the x or y direction using the law of conservation of moments
+
+    Parameters:
+        v1(float): The velocity of the first ball on the chosen axis
+        v2(float): The velocity of the secont ball on the chosen axis
+        m1(float): The mass of the first ball
+        m2(float): The mass of the second ball
+    """
     #new velocities are calculated using the law of conservation of moments
     v2n = (2*m1*v1 + m2*v2-m1*v2)/(m1+m2) 
     v1n = (m1*v1 + m2*v2 - m2*v2n)/m1
     return v1n, v2n #returns the new velocities
 
 def Separate(x1,y1,x2,y2,r1,r2,BoxWidth,BoxHeight, distance):
+    """
+    A function to seperate balls when they collide so they don't get stuck together
+
+    Parameters:
+        x1(float): x coordinate of the center of ball 1
+        y1(float): y coordinate of the center of ball 1
+        x2(float): x coordinate of the center of ball 2
+        y2(float): y coordinate of the center of ball 2
+        r1(float): radius of ball 1
+        r2(float): radius of ball 2
+        BoxWidth(float): Hidth of the box
+        BoxHeigth(float): Height of the box
+        distance(float): The distance between the edges of the balls.
+    """
     #calculate contact angle between ball 1 and ball 2.
     if x1 == x2 and y1 < y2: 
         Phi = np.pi/2       #if ball 2 is directly above ball 1 the contact angle is pi/2
@@ -84,6 +131,18 @@ def Separate(x1,y1,x2,y2,r1,r2,BoxWidth,BoxHeight, distance):
     return x1, y1, x2, y2
 
 def Animate(x1pos,y1pos,x2pos,y2pos,Dt,r1,r2, BoxWidth, BoxHeight):
+    """
+    This function generates the animation after all the calculations are done
+    
+    Parameters:
+        x1pos(array): An array of all the x positions of ball 1
+        y1pos(array): An array of all the y positions of ball 1
+        x2pos(array): An array of all the x positions of ball 2
+        y2pos(array): An array of all the y positions of ball 2
+        Dt(float): The timestep between 2 calculations
+        BoxWidth(float): The width of the box
+        BoxHeight(float): The height of the box
+    """
     #check inputs
     if len(x1pos) != len(y1pos) or len(x2pos) != len(y2pos):
         return "Error"
@@ -113,16 +172,16 @@ def Animate(x1pos,y1pos,x2pos,y2pos,Dt,r1,r2, BoxWidth, BoxHeight):
          
     ani = animation.FuncAnimation(fig, update, interval = interval, frames=int(len(x1pos)/delay), repeat = False) #animates the ball using the update function
     plt.show()
-    
+
 def DropTwoBalls(x1,y1,x2,y2,vx1 = 0.0,vy1 =0.0,vx2 =0.0,vy2 =0.0,r1 = 0.5, r2 = 0.5, m1 = 1.0, m2 = 1.0, BoxWidth = 10.0, BoxHeight = 10.0,  tmax = 10.0):
     """
     This function generates an animation of two balls dropped in a box. 
     
     Parameters:
-        x1(float): The horizontal coordinate of the first ball in meters
-        y1(float): The vertical coordinate of the first ball in meters
-        x2(float): The horizontal coordinate of the second ball in meters
-        y2(float): The vertical coordinate of the second ball in meters
+        x1(float): The horizontal coordinate of the center of the first ball in meters
+        y1(float): The vertical coordinate of the center of the first ball in meters
+        x2(float): The horizontal coordinate of the center of the second ball in meters
+        y2(float): The vertical coordinate of the center of the second ball in meters
         vx1(float): The initial speed of the first ball in the horizontal direction in m/s (standard 0.0)
         vy1(float): The initial speed of the first ball in the vertical direction in m/s (standard 0.0)
         vx2(float): The initial speed of the second ball in the horizontal direction in m/s (standard 0.0)
@@ -138,11 +197,10 @@ def DropTwoBalls(x1,y1,x2,y2,vx1 = 0.0,vy1 =0.0,vx2 =0.0,vy2 =0.0,r1 = 0.5, r2 =
     if CheckInputs(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1,r2,m1,m2,BoxWidth,BoxHeight,tmax) == "Error": #checks if inputs are valid. In a function for readability
         return None
     
-    #set initial values
-    g = -9.81             
+    #set initial values      
     t = 0              
     Dt = 0.01
-    
+       
     #Empty arrays for the x and y coordinates of both balls 
     x1pos =[]
     y1pos =[]
@@ -152,8 +210,8 @@ def DropTwoBalls(x1,y1,x2,y2,vx1 = 0.0,vy1 =0.0,vx2 =0.0,vy2 =0.0,r1 = 0.5, r2 =
     while t <= tmax:            #repeats untill t = tmax
         t += Dt                 #time step
         #movement and acceleration of the balls
-        x1,y1,vy1 = Movement(x1,y1,vx1,vy1,Dt,g)
-        x2,y2,vy2 = Movement(x2,y2,vx2,vy2,Dt,g)
+        x1,y1,vy1 = Movement(x1,y1,vx1,vy1,Dt)
+        x2,y2,vy2 = Movement(x2,y2,vx2,vy2,Dt)
 
         x1,vx1 = CollisionWall(x1,vx1,r1,BoxWidth)  #checks if ball 1 hits a wall
         x2,vx2 = CollisionWall(x2,vx2,r2,BoxWidth)  #checks if ball 2 hits a wall
@@ -166,14 +224,12 @@ def DropTwoBalls(x1,y1,x2,y2,vx1 = 0.0,vy1 =0.0,vx2 =0.0,vy2 =0.0,r1 = 0.5, r2 =
             vx1, vx2 = BallCollision(vx1,vx2,m1,m2) #calculates collision in the x direction
             vy1, vy2 = BallCollision(vy1,vy2,m1,m2) #calculates collision in the y direction
 
-
         #the coordinates of the balls after the calculations are put into the arrays   
         x1pos.append(x1)
         y1pos.append(y1)
         x2pos.append(x2)
         y2pos.append(y2)
 
-        
     Animate(x1pos,y1pos,x2pos,y2pos,Dt,r1,r2,BoxWidth,BoxHeight) #The function to animate the balls is called
     return
 
