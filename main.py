@@ -34,7 +34,7 @@ def CheckInputs(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1,r2,m1,m2,BoxWidth,BoxHeight,tmax)
 
 def Movement(x,y,vx,vy,Dt):
     """
-    A function to simulate the movement of a ball
+    A function to simulate the movement of a ball. It will return the new position and velocity of the ball.
     
     Parameters:
         x(float): The x coordinate of the ball
@@ -115,17 +115,17 @@ def Separate(x1,y1,x2,y2,r1,r2,BoxWidth,BoxHeight, distance):
     x2 -= np.cos(Phi)*0.5*distance
     y2 -= np.sin(Phi)*0.5*distance 
 
-    #moving the balls in case one of the balls gets pushed outside of a boundary. In this case the other ball moves the entire distance
-    if x1 + r1 > BoxWidth or x1 - r1 < 0:
-        x2 -= np.cos(Phi)*0.5*distance #x2 is moved
-        x1 -= np.cos(Phi)*0.5*distance #x1 is moved back to where it didn't collide with the wall
-    if x2 + r2 > BoxWidth or x2 - r2 < 0:
-        x1 += np.cos(Phi)*0.5*distance
+    #moving the balls in case one of the balls gets pushed outside of a boundary. In this case the ball moves back to where it started and the other ball moves the entire distance.
+    if x1 + r1 > BoxWidth or x1 - r1 < 0: #ball 1 phases into a wall
+        x2 -= np.cos(Phi)*0.5*distance 
+        x1 -= np.cos(Phi)*0.5*distance 
+    if x2 + r2 > BoxWidth or x2 - r2 < 0: #ball 2 phases into a wall
+        x1 += np.cos(Phi)*0.5*distance 
         x2 += np.cos(Phi)*0.5*distance
-    if y1 + r1 > BoxHeight or y1 - r1 < 0:
+    if y1 + r1 > BoxHeight or y1 - r1 < 0: #ball 1 phases into the floor or ceiling
         y2 -= np.cos(Phi)*0.5*distance
         y1 -= np.sin(Phi)*0.5*distance
-    if y2 + r2 > BoxHeight or y2 - r2 < 0:
+    if y2 + r2 > BoxHeight or y2 - r2 < 0: #ball 2 phases into the floor or ceiling
         y1 += np.cos(Phi)*0.5*distance
         y2 += np.sin(Phi)*0.5*distance
     return x1, y1, x2, y2
@@ -148,15 +148,18 @@ def Animate(x1pos,y1pos,x2pos,y2pos,Dt,r1,r2, BoxWidth, BoxHeight):
         return "Error"
     if len(x1pos) == 0 or len(y1pos) == 0 or len(x2pos) == 0 or len(y2pos) == 0:
         return "Error"
+    
     #Create the plot
     fig, ax = plt.subplots()
     ax.axis([0,BoxWidth,0,BoxHeight]) 
     ax.set_aspect("equal")      
     plt.xlabel("x(m)")
     plt.ylabel("y(m)")
+
     #Gets the scale of the axes to represent the size of the ball accurately
     M = ax.transData.get_matrix()
     xscale = M[0,0]
+
     #Creates the point on the plot for the balls
     point1, = ax.plot(x1pos[0],y1pos[0], marker="o", markersize = r1*xscale, label = "ball 1")   
     point2, = ax.plot(x2pos[0],y2pos[0], marker="o", markersize = r2*xscale, label = "ball 2")    
@@ -164,7 +167,8 @@ def Animate(x1pos,y1pos,x2pos,y2pos,Dt,r1,r2, BoxWidth, BoxHeight):
 
     interval = 60 #time interval between 2 frames, if every frame gets plotted the framerate is too high for my computer to generate in real time
     delay = interval/(Dt*1000) #the amount of steps that need to be skipped for the animation to run in real time
-    def update(frame): #function to update the dot every frame, this funcion is called in the animate function
+    def update(frame): 
+        """function to update the dot every frame, this funcion is called in the animate function"""
         n = int(frame * delay) #which value for the positions of the balls needs to be used
         point1.set_data([x1pos[n]],[y1pos[n]])  #set the location of ball 1 to a certain frame
         point2.set_data([x2pos[n]],[y2pos[n]])  #set the location of ball 2 to a certain frame
@@ -193,7 +197,12 @@ def DropTwoBalls(x1,y1,x2,y2,vx1 = 0.0,vy1 =0.0,vx2 =0.0,vy2 =0.0,r1 = 0.5, r2 =
         BoxWidth(float): The size of the box in the horizontal direction in meters (standard 10.0)
         BoxHeight(float): The size of the box in the vertical direction in meters (standard 10.0)
         tmax(float): The total runtime of the simulation in seconds (standard 10.0)
+
+    Example: 
+    DropTwoBalls(2.0, 3.0, 4.0, 5.0, vx1 = 4.5, vx2 = 3.0, r1 = 1.0, m1 = 3.0, BoxWidth = 7.0)
+    This will generate an animation of the two balls using the values given. 
     """
+
     if CheckInputs(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1,r2,m1,m2,BoxWidth,BoxHeight,tmax) == "Error": #checks if inputs are valid. In a function for readability
         return None
     
