@@ -1,0 +1,18 @@
+[project]
+name = "two-balls-dropped-in-box"
+version = "0.0.1"
+authors = [
+  { name="Mariza Wildschut", email="wildschutmariza@gmail.com" },
+]
+description = "A package to simulate two balls dropped in a box"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/MWildschut/two-balls-dropped-in-box"
+Issues = "https://github.com/MWildschut/two-balls-dropped-in-box/issues"
