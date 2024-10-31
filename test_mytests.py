@@ -27,13 +27,13 @@ def test_inputs():
                                         
   
 def test_movement():
-    x, y, vy = m.Movement(x=1,y=8,vx=1,vy=0,Dt=0.1,g=-10) #check if movement is working correctly
+    x, y, vy = m.Movement(x=1,y=8,vx=1,vy=0,Dt=0.1, g = -10) #check if movement is working correctly
     assert x == 1.1 and vy == -1 and y == 7.9
 
 def test_wallcollision():
-    x, v = m.CollisionWall(x=1, v=1, r= 0.5, wall=10) #check if nothing happens if there is no collision
+    x, v = m.CollisionWall(x=1, v=1, r= 0.5, size=10) #check if nothing happens if there is no collision
     assert x == 1 and v == 1
-    x, v = m.CollisionWall(x=0,v=-1,r=1, wall=10) #check if collision happens correctly if there is collision
+    x, v = m.CollisionWall(x=0,v=-1,r=1, size=10) #check if collision happens correctly if there is collision
     assert x == 1 and v == 1
 
 def test_ballcollision():

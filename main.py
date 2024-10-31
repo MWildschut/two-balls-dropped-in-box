@@ -32,7 +32,7 @@ def CheckInputs(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1,r2,m1,m2,BoxWidth,BoxHeight,tmax)
         print("Error: the total runtime cannot be zero or negative")
         return "Error"
 
-def Movement(x,y,vx,vy,Dt):
+def Movement(x,y,vx,vy,Dt, g = 9.81):
     """
     A function to simulate the movement of a ball. It will return the new position and velocity of the ball.
     
@@ -44,7 +44,7 @@ def Movement(x,y,vx,vy,Dt):
         Dt(float): The timestep between two calculations
     """
     #Movement for each ball
-    vy += 9.81*Dt             
+    vy += g*Dt             
     x += vx*Dt       
     y += vy*Dt
     return x, y, vy
