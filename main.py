@@ -32,7 +32,7 @@ def CheckInputs(x1,y1,vx1,vy1,x2,y2,vx2,vy2,r1,r2,m1,m2,BoxWidth,BoxHeight,tmax)
         print("Error: the total runtime cannot be zero or negative")
         return "Error"
 
-def Movement(x,y,vx,vy,Dt, g = 9.81):
+def Movement(x,y,vx,vy,Dt, g = -9.81):
     """
     A function to simulate the movement of a ball. It will return the new position and velocity of the ball.
     
@@ -163,7 +163,8 @@ def Animate(x1pos,y1pos,x2pos,y2pos,Dt,r1,r2, BoxWidth, BoxHeight):
     #Creates the point on the plot for the balls
     point1, = ax.plot(x1pos[0],y1pos[0], marker="o", markersize = r1*xscale, label = "ball 1")   
     point2, = ax.plot(x2pos[0],y2pos[0], marker="o", markersize = r2*xscale, label = "ball 2")    
-    plt.legend(loc = "upper right", markerscale = 0.01*xscale)  #the legend is made
+    plt.legend(loc = "upper right", markerscale = 0)  #the legend is made
+    
 
     interval = 60 #time interval between 2 frames, if every frame gets plotted the framerate is too high for my computer to generate in real time
     delay = interval/(Dt*1000) #the amount of steps that need to be skipped for the animation to run in real time
@@ -242,3 +243,24 @@ def DropTwoBalls(x1,y1,x2,y2,vx1 = 0.0,vy1 =0.0,vx2 =0.0,vy2 =0.0,r1 = 0.5, r2 =
     Animate(x1pos,y1pos,x2pos,y2pos,Dt,r1,r2,BoxWidth,BoxHeight) #The function to animate the balls is called
     return
 
+def DropTwoBallsRandom():
+    """
+    This function generates random values for the two balls and runs DropTwoBalls using those random values.
+    """
+    r1 = np.random.uniform(0.25,1.5)
+    r2 = np.random.uniform(0.25,1.5)
+    x1 = np.random.uniform(r1, 10-r1)
+    y1 = np.random.uniform(r1, 10-r1)
+    x2 = np.random.uniform(r2, 10-r2)
+    y2 = np.random.uniform(r2, 10-r2)
+    while np.sqrt((x1-x2)**2 + (y1 - y2)**2) - r1 - r2 < 0:
+        x2 = np.random.uniform(r2, 10-r2)
+        y2 = np.random.uniform(r2, 10-r2)
+    vx1 = np.random.uniform(0.0,5.0)
+    vy1 = np.random.uniform(0.0,5.0)
+    vx2 = np.random.uniform(0.0,5.0)
+    vy2 = np.random.uniform(0.0,5.0)
+    m1 = 4/3 * np.pi * r1**2
+    m2 = 4/3 * np.pi * r2**2
+
+    DropTwoBalls(x1,y1,x2,y2,vx1,vy1,vx2,vy2,r1,r2,m1,m2)
