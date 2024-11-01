@@ -1,0 +1,8 @@
+Metadata-Version: 2.1
+Name: two-balls-dropped-in-box
+Version: 0.1.0
+Summary: A package to simulate two balls dropped in a box
+Author-email: Mariza Wildschut <wildschutmariza@gmail.com>
+License-File: LICENSE
+Requires-Dist: numpy>=1.2.1
+Requires-Dist: matplotlib>=3.9.2
