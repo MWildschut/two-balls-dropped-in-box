@@ -3,12 +3,12 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "two-balls-dropped-in-box"
+name = "TwoBallsDroppedInBox"
 version = "0.1.0"
 description = "A package to simulate two balls dropped in a box"
 authors = [
   { name="Mariza Wildschut", email="wildschutmariza@gmail.com" },
 ]
-dependencies = ["numpy>=1.2.1", "matplotlib>=3.9.2"]
+dependencies = ["numpy>=1.0", "matplotlib>=3.0"]
 
 

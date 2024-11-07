@@ -1,8 +1,0 @@
-LICENSE
-README.md
-pyproject.toml
-src/two_balls_dropped_in_box.egg-info/PKG-INFO
-src/two_balls_dropped_in_box.egg-info/SOURCES.txt
-src/two_balls_dropped_in_box.egg-info/dependency_links.txt
-src/two_balls_dropped_in_box.egg-info/requires.txt
-src/two_balls_dropped_in_box.egg-info/top_level.txt
