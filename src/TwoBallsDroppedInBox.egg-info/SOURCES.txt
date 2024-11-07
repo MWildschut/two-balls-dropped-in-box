@@ -6,6 +6,6 @@ src/TwoBallsDroppedInBox.egg-info/SOURCES.txt
 src/TwoBallsDroppedInBox.egg-info/dependency_links.txt
 src/TwoBallsDroppedInBox.egg-info/requires.txt
 src/TwoBallsDroppedInBox.egg-info/top_level.txt
-src/two-balls-dropped-in-box/functions.py
-src/two-balls-dropped-in-box/main.py
-src/two-balls-dropped-in-box/test_mytests.py
+src/drop_two_balls/functions.py
+src/drop_two_balls/main.py
+src/drop_two_balls/test_mytests.py

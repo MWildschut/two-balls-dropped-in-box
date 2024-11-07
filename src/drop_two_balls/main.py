@@ -1,4 +1,4 @@
-import functions as f
+import drop_two_balls.functions as f
 import numpy as np
 
 def DropTwoBalls(x1,y1,x2,y2,vx1 = 0.0,vy1 =0.0,vx2 =0.0,vy2 =0.0,r1 = 0.5, r2 = 0.5, m1 = 1.0, m2 = 1.0, BoxWidth = 10.0, BoxHeight = 10.0,  tmax = 10.0):
